@@ -27,50 +27,45 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-venv \
     pipx \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
+    groff \
+    less \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Create and activate virtual environment
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# # Set up Python virtual environment and install packages
+# ENV VIRTUAL_ENV=/opt/venv
+# RUN python3 -m venv $VIRTUAL_ENV
+# ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Enable pipx
-ENV PIPX_HOME=/opt/pipx
-ENV PIPX_BIN_DIR=/usr/local/bin
-RUN python3 -m pipx ensurepath
+# # Install Python packages in the virtual environment
+# RUN pip3 install --upgrade pip && \
+#     pip3 install --no-cache-dir \
+#     boto3 \
+#     awscli-local \
+#     docker-compose \
+#     python-jenkins \
+#     python-gitlab \
+#     python-terraform \
+#     openshift \
+#     kubernetes \
+#     pre-commit \
+#     ansible-lint \
+#     yamllint \
+#     molecule \
+#     invoke \
+#     fabric \
+#     pipenv \
+#     poetry
 
-# Install Python applications with pipx
-RUN pipx install pre-commit \
-    && pipx install ansible \
-    && pipx install docker-compose \
-    && pipx install awscli \
-    && pipx install poetry \
-    && pipx install pipenv \
-    && pipx install ansible-lint \
-    && pipx install molecule \
-    && pipx install yamllint
+# # Install standalone Python applications using pipx
+# RUN pipx install ansible && \
+#     pipx install awscli && \
+#     pipx install pre-commit && \
+#     pipx install black && \
+#     pipx install flake8 && \
+#     pipx install mypy
 
-# Install Python libraries in virtual environment
-RUN $VIRTUAL_ENV/bin/pip install --no-cache-dir \
-    boto3 \
-    kubernetes \
-    openshift \
-    python-jenkins \
-    python-gitlab \
-    python-terraform \
-    invoke \
-    fabric
-
-# Install apt-provided Python packages
-RUN apt-get update && apt-get install -y \
-    python3-boto3 \
-    python3-kubernetes \
-    python3-yaml \
-    python3-docker \
-    && rm -rf /var/lib/apt/lists/*
 
 # # Install Ruby gems for DevOps
 # RUN gem install \
@@ -102,6 +97,8 @@ RUN apt-get update && apt-get install -y \
 #     apt-get install -y git-lfs && \
 #     git lfs install
 
+# Install pre-commit
+# RUN pip3 install pre-commit
 
 # -----------------------------
 # 🚀 Install Additional CI/CD Tools
