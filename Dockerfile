@@ -6,13 +6,26 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
 # Update and install basic dependencies
+# Update and install basic dependencies
 RUN apt-get update && apt-get install -y \
-    curl wget git unzip jq vim \
-    iputils-ping net-tools dnsutils \
+    curl \
+    wget \
+    git \
+    unzip \
+    jq \
+    vim \
+    tar \
+    iputils-ping \
+    net-tools \
+    dnsutils \
     software-properties-common \
-    postgresql-client mysql-client redis-tools \
-    nmap netcat htop \
+    postgresql-client \
+    mysql-client \
+    redis-tools \
+    nmap \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
+
 
 # -----------------------------
 # 🐳 Install Docker CLI
@@ -28,9 +41,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     && mv kubectl /usr/local/bin/
 
 # Install kustomize
-RUN curl -s "https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest" | \
-    grep browser_download | grep linux_amd64 | cut -d '"' -f 4 | wget -qi - \
-    && chmod +x kustomize && mv kustomize /usr/local/bin/
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
 # Install Helm
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
@@ -72,23 +83,22 @@ RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/rel
 # -----------------------------
 # 🔍 Install Observability Tools
 # -----------------------------
-# Install Prometheus CLI
-RUN curl -sSLO https://github.com/prometheus/prometheus/releases/latest/download/prometheus-*-linux-amd64.tar.gz && \
-    tar -xzf prometheus-*-linux-amd64.tar.gz && mv prometheus-*-linux-amd64/promtool /usr/local/bin/ && rm -rf prometheus-*
-
-# Install Grafana CLI
-RUN curl -sSLO https://dl.grafana.com/oss/release/grafana-*-linux-amd64.tar.gz && \
-    tar -xzf grafana-*-linux-amd64.tar.gz && mv grafana-*-linux-amd64/bin/grafana-cli /usr/local/bin/ && rm -rf grafana-*
+# # Get latest Prometheus release version dynamically
+RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
+    curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
+    tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
+    mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
+    rm -rf prometheus-*
 
 # Install Velero (Kubernetes Backup)
-RUN curl -LO https://github.com/vmware-tanzu/velero/releases/latest/download/velero-linux-amd64.tar.gz && \
-    tar -xzf velero-linux-amd64.tar.gz && mv velero-linux-amd64/velero /usr/local/bin/
+RUN curl -LO https://github.com/vmware-tanzu/velero/releases/download/v1.15.2/velero-v1.15.2-linux-amd64.tar.gz && \
+    tar -xzf velero-v1.15.2-linux-amd64.tar.gz && mv velero-v1.15.2-linux-amd64/velero /usr/local/bin/
 
 # -----------------------------
 # 🛡️ Install Security Tools
 # -----------------------------
 # Install Trivy (Container Security Scanner)
-RUN curl -fsSL https://aquasecurity.github.io/trivy/releases/latest/trivy-linux-amd64.tar.gz | tar xz && mv trivy /usr/local/bin/
+RUN wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb && dpkg -i trivy_0.18.3_Linux-64bit.deb
 
 # Install kube-bench (Kubernetes CIS Benchmark)
 RUN curl -LO https://github.com/aquasecurity/kube-bench/releases/latest/download/kube-bench-linux-amd64 && chmod +x kube-bench-linux-amd64 && mv kube-bench-linux-amd64 /usr/local/bin/kube-bench
