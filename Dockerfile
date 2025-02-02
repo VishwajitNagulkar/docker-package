@@ -5,7 +5,11 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
-# Update and install basic dependencies
+# Set environment variables for tools
+ENV KUBE_EDITOR="vim"
+ENV HELM_EXPERIMENTAL_OCI=1
+ENV DOCKER_BUILDKIT=1
+
 # Update and install basic dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -24,103 +28,181 @@ RUN apt-get update && apt-get install -y \
     redis-tools \
     nmap \
     netcat-openbsd \
+    python3 \
+    python3-pip \
+    groff \
+    less \
+    nodejs \
+    npm \
+    ruby \
+    ruby-dev \
+    build-essential \
+    libssl-dev \
+    zlib1g-dev \
+    tmux \
+    screen \
+    iftop \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python packages commonly used in DevOps
+RUN pip3 install --no-cache-dir \
+    boto3 \
+    awscli-local \
+    docker-compose \
+    python-jenkins \
+    python-gitlab \
+    python-terraform \
+    openshift \
+    kubernetes \
+    pre-commit \
+    ansible-lint \
+    yamllint \
+    molecule \
+    invoke \
+    fabric \
+    pipenv \
+    poetry
+
+# Install Ruby gems for DevOps
+RUN gem install \
+    bundler \
+    rake \
+    serverspec \
+    test-kitchen \
+    kitchen-docker \
+    inspec
 
 # -----------------------------
-# 🐳 Install Docker CLI
+# 🐳 Install Docker CLI and Docker Compose
 # -----------------------------
-RUN curl -fsSL https://get.docker.com | sh
+[Previous Docker section remains the same]
 
-# -----------------------------
-# ☸️ Install Kubernetes CLI tools
-# -----------------------------
-# Install kubectl
-RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
-    && chmod +x kubectl \
-    && mv kubectl /usr/local/bin/
-
-# Install kustomize
-RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-
-# Install Helm
-RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-# Install kind (Kubernetes in Docker)
-RUN curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64 && chmod +x /usr/local/bin/kind
-
-# Install k9s (Kubernetes Terminal UI)
-RUN curl -sSLO https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
-    tar -xvf k9s_Linux_amd64.tar.gz && mv k9s /usr/local/bin/ && rm k9s_Linux_amd64.tar.gz
-
-# Install kubectx and kubens (Kubernetes context switching)
-RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
-    ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx && \
-    ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+# Install Docker Buildx
+RUN mkdir -p ~/.docker/cli-plugins/ && \
+    curl -SL https://github.com/docker/buildx/releases/download/v0.12.0/buildx-v0.12.0.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx && \
+    chmod a+x ~/.docker/cli-plugins/docker-buildx
 
 # -----------------------------
-# ⚙️ Install Terraform & Ansible
+# 📝 Install Git Tools
 # -----------------------------
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
-    apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
-    apt-get update && apt-get install -y terraform ansible
+# Install Git-flow
+RUN apt-get update && apt-get install -y git-flow
 
-# -----------------------------
-# 🚀 Install CI/CD Tools
-# -----------------------------
-# Install ArgoCD CLI
-RUN curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && chmod +x /usr/local/bin/argocd
+# Install Git-lfs
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
+    apt-get install -y git-lfs && \
+    git lfs install
 
-# Install Tekton CLI
-RUN curl -sSL -o /usr/local/bin/tkn https://github.com/tektoncd/cli/releases/latest/download/tkn-linux-amd64 && chmod +x /usr/local/bin/tkn
-
-# Install FluxCD CLI
-RUN curl -s https://fluxcd.io/install.sh | bash
-
-# Install Skaffold
-RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x /usr/local/bin/skaffold
+# Install pre-commit
+RUN curl -sSL https://pre-commit.com/install-local.py | python3 -
 
 # -----------------------------
-# 🔍 Install Observability Tools
+# 🚀 Install Additional CI/CD Tools
 # -----------------------------
-# # Get latest Prometheus release version dynamically
-RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
-    curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
-    tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
-    mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
-    rm -rf prometheus-*
+# Install Jenkins CLI
+RUN curl -L https://github.com/jenkins-zh/jenkins-cli/releases/latest/download/jcli-linux-amd64.tar.gz | tar xz && \
+    mv jcli /usr/local/bin/
 
-# Install Velero (Kubernetes Backup)
-RUN curl -LO https://github.com/vmware-tanzu/velero/releases/download/v1.15.2/velero-v1.15.2-linux-amd64.tar.gz && \
-    tar -xzf velero-v1.15.2-linux-amd64.tar.gz && mv velero-v1.15.2-linux-amd64/velero /usr/local/bin/
+# Install GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y gh
 
-# -----------------------------
-# 🛡️ Install Security Tools
-# -----------------------------
-# Install Trivy (Container Security Scanner)
-RUN wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb && dpkg -i trivy_0.18.3_Linux-64bit.deb
-
-# Install kube-bench (Kubernetes CIS Benchmark)
-RUN curl -LO https://github.com/aquasecurity/kube-bench/releases/latest/download/kube-bench-linux-amd64 && chmod +x kube-bench-linux-amd64 && mv kube-bench-linux-amd64 /usr/local/bin/kube-bench
+# Install GitLab CLI
+RUN curl -s https://raw.githubusercontent.com/profclems/glab/trunk/scripts/install.sh | bash
 
 # -----------------------------
-# ☁️ Install Cloud CLI Tools
+# 🔧 Install Infrastructure Testing Tools
 # -----------------------------
-# Install AWS CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install && rm -rf awscliv2.zip aws
+# Install Terratest
+RUN curl -LO https://golang.org/dl/go1.20.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.20.linux-amd64.tar.gz && \
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc && \
+    go install github.com/gruntwork-io/terratest/modules/terraform
 
-# Install GCP SDK
-RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-$(curl -s https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json | jq -r .version)-linux-x86_64.tar.gz && \
-    tar -xzf google-cloud-sdk-*.tar.gz && ./google-cloud-sdk/install.sh -q && rm -rf google-cloud-sdk-*.tar.gz
+# Install Chaos Toolkit
+RUN pip3 install --no-cache-dir chaostoolkit
 
-# Install Azure CLI
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+# -----------------------------
+# 📊 Install Metrics Collection Tools
+# -----------------------------
+# Install collectd
+RUN apt-get update && apt-get install -y collectd
+
+# Install Telegraf
+RUN wget -q https://dl.influxdata.com/telegraf/releases/telegraf_1.21.4-1_amd64.deb && \
+    dpkg -i telegraf_1.21.4-1_amd64.deb
+
+# -----------------------------
+# 🔍 Install Service Mesh Tools
+# -----------------------------
+# Install Istioctl
+RUN curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.20.0 sh - && \
+    mv istio-1.20.0/bin/istioctl /usr/local/bin/ && \
+    rm -rf istio-1.20.0
+
+# Install Linkerd CLI
+RUN curl -sL https://run.linkerd.io/install | sh
+
+# -----------------------------
+# 🔐 Install Additional Security Tools
+# -----------------------------
+# Install Terrascan
+RUN curl -L "$(curl -s https://api.github.com/repos/accurics/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz && \
+    tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz && \
+    install terrascan /usr/local/bin && rm terrascan
+
+# Install Checkov
+RUN pip3 install --no-cache-dir checkov
+
+# Install tfsec
+RUN curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+# -----------------------------
+# 📈 Install Performance Monitoring
+# -----------------------------
+# Install sysstat for system monitoring
+RUN apt-get update && apt-get install -y sysstat
+
+# Install Siege for load testing
+RUN apt-get install -y siege
+
+# -----------------------------
+# 🛠️ Install Development Environment Tools
+# -----------------------------
+# Install direnv for environment management
+RUN curl -sfL https://direnv.net/install.sh | bash
+
+# Install fzf for fuzzy finding
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && \
+    ~/.fzf/install --all
 
 # -----------------------------
 # 🏁 Final Setup
 # -----------------------------
+# Add more convenient aliases and functions
+RUN echo 'alias k=kubectl' >> ~/.bashrc && \
+    echo 'alias tf=terraform' >> ~/.bashrc && \
+    echo 'alias d=docker' >> ~/.bashrc && \
+    echo 'alias g=git' >> ~/.bashrc && \
+    echo 'source <(kubectl completion bash)' >> ~/.bashrc && \
+    echo 'source <(helm completion bash)' >> ~/.bashrc && \
+    echo 'source <(terraform completion bash)' >> ~/.bashrc
+
+# Add useful functions
+RUN echo 'function kns() { kubectl config set-context --current --namespace="$1"; }' >> ~/.bashrc && \
+    echo 'function kdebug() { kubectl run -i --rm --tty debug --image=busybox --restart=Never -- sh; }' >> ~/.bashrc
+
+# Create common directories
+RUN mkdir -p /root/workspace /root/.kube /root/.ssh /root/scripts
+
 # Set working directory
-WORKDIR /root
+WORKDIR /root/workspace
+
+# Add healthcheck
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
 
 # Default command
 CMD [ "bash" ]
