@@ -22,8 +22,7 @@ RUN apt-get update && apt-get install -y \
     mysql-client \
     redis-tools \
     nmap \
-    netcat-openbsd \  # Replaced netcat with netcat-openbsd
-    htop \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 
