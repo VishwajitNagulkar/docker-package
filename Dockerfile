@@ -15,89 +15,80 @@ RUN apt-get update && apt-get install -y \
     jq \
     vim \
     tar \
-    # iputils-ping \
-    # net-tools \
-    # dnsutils \
-    # software-properties-common \
-    # postgresql-client \
-    # mysql-client \
-    # redis-tools \
-    # nmap \
-    # netcat-openbsd \
+    iputils-ping \
+    net-tools \
+    dnsutils \
+    software-properties-common \
+    postgresql-client \
+    mysql-client \
+    redis-tools \
+    nmap \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 
-# # -----------------------------
-# # 🐳 Install Docker CLI
-# # -----------------------------
-# RUN curl -fsSL https://get.docker.com | sh
+# -----------------------------
+# 🐳 Install Docker CLI
+# -----------------------------
+RUN curl -fsSL https://get.docker.com | sh
 
-# # -----------------------------
-# # ☸️ Install Kubernetes CLI tools
-# # -----------------------------
-# # Install kubectl
-# RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
-#     && chmod +x kubectl \
-#     && mv kubectl /usr/local/bin/
+# -----------------------------
+# ☸️ Install Kubernetes CLI tools
+# -----------------------------
+# Install kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+    && chmod +x kubectl \
+    && mv kubectl /usr/local/bin/
 
-# # Install kustomize
-# RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+# Install kustomize
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
-# # Install Helm
-# RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+# Install Helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-# # Install kind (Kubernetes in Docker)
-# RUN curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64 && chmod +x /usr/local/bin/kind
+# Install kind (Kubernetes in Docker)
+RUN curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64 && chmod +x /usr/local/bin/kind
 
-# # Install k9s (Kubernetes Terminal UI)
-# RUN curl -sSLO https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
-#     tar -xvf k9s_Linux_amd64.tar.gz && mv k9s /usr/local/bin/ && rm k9s_Linux_amd64.tar.gz
+# Install k9s (Kubernetes Terminal UI)
+RUN curl -sSLO https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz && \
+    tar -xvf k9s_Linux_amd64.tar.gz && mv k9s /usr/local/bin/ && rm k9s_Linux_amd64.tar.gz
 
-# # Install kubectx and kubens (Kubernetes context switching)
-# RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
-#     ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx && \
-#     ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+# Install kubectx and kubens (Kubernetes context switching)
+RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
+    ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx && \
+    ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 
-# # -----------------------------
-# # ⚙️ Install Terraform & Ansible
-# # -----------------------------
-# RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
-#     apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
-#     apt-get update && apt-get install -y terraform ansible
+# -----------------------------
+# ⚙️ Install Terraform & Ansible
+# -----------------------------
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
+    apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && \
+    apt-get update && apt-get install -y terraform ansible
 
-# # -----------------------------
-# # 🚀 Install CI/CD Tools
-# # -----------------------------
-# # Install ArgoCD CLI
-# RUN curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && chmod +x /usr/local/bin/argocd
+# -----------------------------
+# 🚀 Install CI/CD Tools
+# -----------------------------
+# Install ArgoCD CLI
+RUN curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && chmod +x /usr/local/bin/argocd
 
-# # Install Tekton CLI
-# RUN curl -sSL -o /usr/local/bin/tkn https://github.com/tektoncd/cli/releases/latest/download/tkn-linux-amd64 && chmod +x /usr/local/bin/tkn
+# Install Tekton CLI
+RUN curl -sSL -o /usr/local/bin/tkn https://github.com/tektoncd/cli/releases/latest/download/tkn-linux-amd64 && chmod +x /usr/local/bin/tkn
 
-# # Install FluxCD CLI
-# RUN curl -s https://fluxcd.io/install.sh | bash
+# Install FluxCD CLI
+RUN curl -s https://fluxcd.io/install.sh | bash
 
-# # Install Skaffold
-# RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x /usr/local/bin/skaffold
+# Install Skaffold
+RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x /usr/local/bin/skaffold
 
-# # -----------------------------
-# # 🔍 Install Observability Tools
-# # -----------------------------
-# # # Get latest Prometheus release version dynamically
-# RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
-#     curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
-#     tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
-#     mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
-#     rm -rf prometheus-*
-
-# # Fetch the latest Grafana version
-# # Fetch the latest Grafana version
-# RUN GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | jq -r .tag_name) && \
-#     curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz" && \
-#     tar -xzf grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz && \
-#     mv grafana-${GRAFANA_VERSION#v}/bin/grafana-cli /usr/local/bin/ && \
-#     rm -rf grafana-*
-
+# -----------------------------
+# 🔍 Install Observability Tools
+# -----------------------------
+# # Get latest Prometheus release version dynamically
+RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
+    curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
+    tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
+    mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
+    rm -rf prometheus-*
 
 # Install Velero (Kubernetes Backup)
 RUN curl -LO https://github.com/vmware-tanzu/velero/releases/download/v1.15.2/velero-v1.15.2-linux-amd64.tar.gz && \
