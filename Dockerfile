@@ -91,11 +91,13 @@ RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/re
     rm -rf prometheus-*
 
 # Fetch the latest Grafana version
+# Fetch the latest Grafana version
 RUN GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | jq -r .tag_name) && \
-    curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}-linux-amd64.tar.gz" && \
-    tar -xzf grafana-${GRAFANA_VERSION#v}-linux-amd64.tar.gz && \
-    mv grafana-${GRAFANA_VERSION#v}-linux-amd64/bin/grafana-cli /usr/local/bin/ && \
+    curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz" && \
+    tar -xzf grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz && \
+    mv grafana-${GRAFANA_VERSION#v}/bin/grafana-cli /usr/local/bin/ && \
     rm -rf grafana-*
+
 
 # Install Velero (Kubernetes Backup)
 RUN curl -LO https://github.com/vmware-tanzu/velero/releases/latest/download/velero-linux-amd64.tar.gz && \
