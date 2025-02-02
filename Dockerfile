@@ -81,24 +81,24 @@ RUN apt-get update && apt-get install -y \
 # -----------------------------
 # [Previous Docker section remains the same]
 
-# Install Docker Buildx
-RUN mkdir -p ~/.docker/cli-plugins/ && \
-    curl -SL https://github.com/docker/buildx/releases/download/v0.12.0/buildx-v0.12.0.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx && \
-    chmod a+x ~/.docker/cli-plugins/docker-buildx
+# # Install Docker Buildx
+# RUN mkdir -p ~/.docker/cli-plugins/ && \
+#     curl -SL https://github.com/docker/buildx/releases/download/v0.12.0/buildx-v0.12.0.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx && \
+#     chmod a+x ~/.docker/cli-plugins/docker-buildx
 
-# -----------------------------
-# 📝 Install Git Tools
-# -----------------------------
-# Install Git-flow
-RUN apt-get update && apt-get install -y git-flow
+# # -----------------------------
+# # 📝 Install Git Tools
+# # -----------------------------
+# # Install Git-flow
+# RUN apt-get update && apt-get install -y git-flow
 
-# Install Git-lfs
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    apt-get install -y git-lfs && \
-    git lfs install
+# # Install Git-lfs
+# RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
+#     apt-get install -y git-lfs && \
+#     git lfs install
 
 # Install pre-commit
-RUN curl -sSL https://pre-commit.com/install-local.py | python3 -
+RUN pip install pre-commit
 
 # -----------------------------
 # 🚀 Install Additional CI/CD Tools
