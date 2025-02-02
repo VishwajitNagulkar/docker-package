@@ -5,11 +5,6 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
-# Set environment variables for tools
-ENV KUBE_EDITOR="vim"
-ENV HELM_EXPERIMENTAL_OCI=1
-ENV DOCKER_BUILDKIT=1
-
 # Update and install basic dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -28,24 +23,24 @@ RUN apt-get update && apt-get install -y \
     redis-tools \
     nmap \
     netcat-openbsd \
-    python3 \
+    python3-full \
     python3-pip \
+    python3-venv \
+    pipx \
     groff \
     less \
     nodejs \
     npm \
-    ruby \
-    ruby-dev \
-    build-essential \
-    libssl-dev \
-    zlib1g-dev \
-    tmux \
-    screen \
-    iftop \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages commonly used in DevOps
-RUN pip3 install --no-cache-dir \
+# Set up Python virtual environment and install packages
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install Python packages in the virtual environment
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir \
     boto3 \
     awscli-local \
     docker-compose \
@@ -62,6 +57,16 @@ RUN pip3 install --no-cache-dir \
     fabric \
     pipenv \
     poetry
+
+# Install standalone Python applications using pipx
+RUN pipx install ansible && \
+    pipx install awscli && \
+    pipx install pre-commit && \
+    pipx install black && \
+    pipx install flake8 && \
+    pipx install mypy
+
+[Rest of the Dockerfile remains the same...]
 
 # Install Ruby gems for DevOps
 RUN gem install \
