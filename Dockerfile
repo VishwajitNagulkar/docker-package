@@ -7,23 +7,23 @@ ENV PATH="/google-cloud-sdk/bin:$PATH"
 
 # Update and install basic dependencies
 # Update and install basic dependencies
-# RUN apt-get update && apt-get install -y \
-#     curl \
-#     wget \
-#     git \
-#     unzip \
-#     jq \
-#     vim \
-#     iputils-ping \
-#     net-tools \
-#     dnsutils \
-#     software-properties-common \
-#     postgresql-client \
-#     mysql-client \
-#     redis-tools \
-#     nmap \
-#     netcat-openbsd \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    unzip \
+    jq \
+    vim \
+    # iputils-ping \
+    # net-tools \
+    # dnsutils \
+    # software-properties-common \
+    # postgresql-client \
+    # mysql-client \
+    # redis-tools \
+    # nmap \
+    # netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
 
 # # -----------------------------
@@ -83,11 +83,11 @@ ENV PATH="/google-cloud-sdk/bin:$PATH"
 # 🔍 Install Observability Tools
 # -----------------------------
 # # Get latest Prometheus release version dynamically
-# RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
-#     curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
-#     tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
-#     mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
-#     rm -rf prometheus-*
+RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
+    curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
+    tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
+    mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
+    rm -rf prometheus-*
 
 # Install Grafana CLI
 RUN curl -sSLO https://dl.grafana.com/oss/release/grafana-*-linux-amd64.tar.gz && \
