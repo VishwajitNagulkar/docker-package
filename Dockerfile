@@ -6,13 +6,26 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
 # Update and install basic dependencies
+# Update and install basic dependencies
 RUN apt-get update && apt-get install -y \
-    curl wget git unzip jq vim \
-    iputils-ping net-tools dnsutils \
+    curl \
+    wget \
+    git \
+    unzip \
+    jq \
+    vim \
+    iputils-ping \
+    net-tools \
+    dnsutils \
     software-properties-common \
-    postgresql-client mysql-client redis-tools \
-    nmap netcat htop \
+    postgresql-client \
+    mysql-client \
+    redis-tools \
+    nmap \
+    netcat-openbsd \  # Replaced netcat with netcat-openbsd
+    htop \
     && rm -rf /var/lib/apt/lists/*
+
 
 # -----------------------------
 # 🐳 Install Docker CLI
