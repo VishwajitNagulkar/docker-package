@@ -100,8 +100,8 @@ RUN apt-get update && apt-get install -y \
 
 
 # Install Velero (Kubernetes Backup)
-RUN curl -LO https://github.com/vmware-tanzu/velero/releases/latest/download/velero-linux-amd64.tar.gz && \
-    tar -xzf velero-linux-amd64.tar.gz && mv velero-linux-amd64/velero /usr/local/bin/
+RUN curl -LO https://github.com/vmware-tanzu/velero/releases/download/v1.15.2/velero-v1.15.2-linux-amd64.tar.gz && \
+    tar -xzf velero-v1.15.2-linux-amd64.tar.gz && mv velero-v1.15.2-linux-amd64/velero /usr/local/bin/
 
 # -----------------------------
 # 🛡️ Install Security Tools
