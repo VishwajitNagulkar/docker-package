@@ -40,9 +40,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     && mv kubectl /usr/local/bin/
 
 # Install kustomize
-RUN curl -s "https://api.github.com/repos/kubernetes-sigs/kustomize/releases/latest" | \
-    grep browser_download | grep linux_amd64 | cut -d '"' -f 4 | wget -qi - \
-    && chmod +x kustomize && mv kustomize /usr/local/bin/
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
 # Install Helm
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
