@@ -98,7 +98,7 @@ RUN apt-get update && apt-get install -y \
 #     git lfs install
 
 # Install pre-commit
-RUN pip install pre-commit
+RUN pip3 install pre-commit
 
 # -----------------------------
 # 🚀 Install Additional CI/CD Tools
