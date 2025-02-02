@@ -80,23 +80,23 @@ RUN apt-get update && apt-get install -y \
 # # Install Skaffold
 # RUN curl -Lo /usr/local/bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x /usr/local/bin/skaffold
 
-# -----------------------------
-# 🔍 Install Observability Tools
-# -----------------------------
-# # Get latest Prometheus release version dynamically
-RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
-    curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
-    tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
-    mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
-    rm -rf prometheus-*
+# # -----------------------------
+# # 🔍 Install Observability Tools
+# # -----------------------------
+# # # Get latest Prometheus release version dynamically
+# RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name) && \
+#     curl -sSLO "https://github.com/prometheus/prometheus/releases/download/${PROM_VERSION}/prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz" && \
+#     tar -xzf prometheus-${PROM_VERSION#v}.linux-amd64.tar.gz && \
+#     mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
+#     rm -rf prometheus-*
 
-# Fetch the latest Grafana version
-# Fetch the latest Grafana version
-RUN GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | jq -r .tag_name) && \
-    curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz" && \
-    tar -xzf grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz && \
-    mv grafana-${GRAFANA_VERSION#v}/bin/grafana-cli /usr/local/bin/ && \
-    rm -rf grafana-*
+# # Fetch the latest Grafana version
+# # Fetch the latest Grafana version
+# RUN GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | jq -r .tag_name) && \
+#     curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz" && \
+#     tar -xzf grafana-${GRAFANA_VERSION#v}.linux-amd64.tar.gz && \
+#     mv grafana-${GRAFANA_VERSION#v}/bin/grafana-cli /usr/local/bin/ && \
+#     rm -rf grafana-*
 
 
 # Install Velero (Kubernetes Backup)
