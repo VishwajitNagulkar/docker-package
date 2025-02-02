@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     jq \
     vim \
+    tar \
     # iputils-ping \
     # net-tools \
     # dnsutils \
@@ -89,9 +90,12 @@ RUN PROM_VERSION=$(curl -s https://api.github.com/repos/prometheus/prometheus/re
     mv prometheus-${PROM_VERSION#v}.linux-amd64/promtool /usr/local/bin/ && \
     rm -rf prometheus-*
 
-# Install Grafana CLI
-RUN curl -sSLO https://dl.grafana.com/oss/release/grafana-*-linux-amd64.tar.gz && \
-    tar -xzf grafana-*-linux-amd64.tar.gz && mv grafana-*-linux-amd64/bin/grafana-cli /usr/local/bin/ && rm -rf grafana-*
+# Fetch the latest Grafana version
+RUN GRAFANA_VERSION=$(curl -s https://api.github.com/repos/grafana/grafana/releases/latest | jq -r .tag_name) && \
+    curl -sSLO "https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION#v}-linux-amd64.tar.gz" && \
+    tar -xzf grafana-${GRAFANA_VERSION#v}-linux-amd64.tar.gz && \
+    mv grafana-${GRAFANA_VERSION#v}-linux-amd64/bin/grafana-cli /usr/local/bin/ && \
+    rm -rf grafana-*
 
 # Install Velero (Kubernetes Backup)
 RUN curl -LO https://github.com/vmware-tanzu/velero/releases/latest/download/velero-linux-amd64.tar.gz && \
