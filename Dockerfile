@@ -33,50 +33,50 @@ RUN apt-get update && apt-get install -y \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up Python virtual environment and install packages
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# # Set up Python virtual environment and install packages
+# ENV VIRTUAL_ENV=/opt/venv
+# RUN python3 -m venv $VIRTUAL_ENV
+# ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install Python packages in the virtual environment
-RUN pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir \
-    boto3 \
-    awscli-local \
-    docker-compose \
-    python-jenkins \
-    python-gitlab \
-    python-terraform \
-    openshift \
-    kubernetes \
-    pre-commit \
-    ansible-lint \
-    yamllint \
-    molecule \
-    invoke \
-    fabric \
-    pipenv \
-    poetry
+# # Install Python packages in the virtual environment
+# RUN pip3 install --upgrade pip && \
+#     pip3 install --no-cache-dir \
+#     boto3 \
+#     awscli-local \
+#     docker-compose \
+#     python-jenkins \
+#     python-gitlab \
+#     python-terraform \
+#     openshift \
+#     kubernetes \
+#     pre-commit \
+#     ansible-lint \
+#     yamllint \
+#     molecule \
+#     invoke \
+#     fabric \
+#     pipenv \
+#     poetry
 
-# Install standalone Python applications using pipx
-RUN pipx install ansible && \
-    pipx install awscli && \
-    pipx install pre-commit && \
-    pipx install black && \
-    pipx install flake8 && \
-    pipx install mypy
+# # Install standalone Python applications using pipx
+# RUN pipx install ansible && \
+#     pipx install awscli && \
+#     pipx install pre-commit && \
+#     pipx install black && \
+#     pipx install flake8 && \
+#     pipx install mypy
 
 
-# Install Ruby gems for DevOps
-RUN gem install \
-    bundler \
-    rake \
-    serverspec \
-    test-kitchen \
-    kitchen-docker \
-    inspec
+# # Install Ruby gems for DevOps
+# RUN gem install \
+#     bundler \
+#     rake \
+#     serverspec \
+#     test-kitchen \
+#     kitchen-docker \
+#     inspec
 
-# -----------------------------
+# # -----------------------------
 # 🐳 Install Docker CLI and Docker Compose
 # -----------------------------
 # [Previous Docker section remains the same]
