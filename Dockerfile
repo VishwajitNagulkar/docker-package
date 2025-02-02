@@ -66,7 +66,6 @@ RUN pipx install ansible && \
     pipx install flake8 && \
     pipx install mypy
 
-[Rest of the Dockerfile remains the same...]
 
 # Install Ruby gems for DevOps
 RUN gem install \
