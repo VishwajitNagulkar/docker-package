@@ -75,7 +75,7 @@ RUN gem install \
 # -----------------------------
 # 🐳 Install Docker CLI and Docker Compose
 # -----------------------------
-[Previous Docker section remains the same]
+# [Previous Docker section remains the same]
 
 # Install Docker Buildx
 RUN mkdir -p ~/.docker/cli-plugins/ && \
