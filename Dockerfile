@@ -107,7 +107,7 @@ RUN curl -LO https://github.com/vmware-tanzu/velero/releases/download/v1.15.2/ve
 # 🛡️ Install Security Tools
 # -----------------------------
 # Install Trivy (Container Security Scanner)
-RUN curl -fsSL https://aquasecurity.github.io/trivy/releases/latest/trivy-linux-amd64.tar.gz | tar xz && mv trivy /usr/local/bin/
+RUN wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb && sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
 
 # Install kube-bench (Kubernetes CIS Benchmark)
 RUN curl -LO https://github.com/aquasecurity/kube-bench/releases/latest/download/kube-bench-linux-amd64 && chmod +x kube-bench-linux-amd64 && mv kube-bench-linux-amd64 /usr/local/bin/kube-bench
